@@ -1,0 +1,52 @@
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# Build outputs
+dist/
+build/
+.vite/
+
+# Environment & secrets
+.env
+.env.*
+!.env.example
+
+# Uploads & user data
+uploads/
+attached_assets/
+
+# Replit specific
+.replit
+replit.nix
+.upm/
+.cache/
+.local/
+.breakpoints
+.config/
+
+# Logs
+*.log
+npm-debug.log*
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+
+# Certificates
+*.pem
+*.key
+*.cert
+*.crt
+
+# Deploy keys (NUNCA commitar)
+.deploy/
+attached_assets/
+# Replit attached assets (nao commitar)
+.whatsapp-session/
+.env.deploy

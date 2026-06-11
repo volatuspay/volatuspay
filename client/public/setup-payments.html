@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ativar Pagamentos - Sua Empresa Aqui</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 600px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 28px;
+        }
+        
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+        }
+        
+        .status {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        
+        .status-item {
+            display: flex;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #e9ecef;
+        }
+        
+        .status-item:last-child {
+            border-bottom: none;
+        }
+        
+        .status-icon {
+            font-size: 24px;
+            margin-right: 12px;
+            width: 30px;
+        }
+        
+        .status-text {
+            flex: 1;
+        }
+        
+        .status-label {
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .status-desc {
+            font-size: 14px;
+            color: #666;
+        }
+        
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 16px 32px;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn:active {
+            transform: translateY(0);
+        }
+        
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        
+        .log {
+            background: #1a1a1a;
+            color: #0f0;
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 20px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            max-height: 300px;
+            overflow-y: auto;
+            display: none;
+        }
+        
+        .log.show {
+            display: block;
+        }
+        
+        .log-line {
+            margin: 5px 0;
+        }
+        
+        .success { color: #10b981; }
+        .error { color: #ef4444; }
+        .warning { color: #f59e0b; }
+        .info { color: #3b82f6; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 Ativar Integrações de Pagamento</h1>
+        <p class="subtitle">Configure todas as integrações com um clique</p>
+        
+        <div class="status">
+            <div class="status-item">
+                <span class="status-icon">💳</span>
+                <div class="status-text">
+                    <div class="status-label">Stripe</div>
+                    <div class="status-desc">Pagamentos internacionais - Produção</div>
+                </div>
+            </div>
+            
+            <div class="status-item">
+                <span class="status-icon">🏦</span>
+                <div class="status-text">
+                    <div class="status-label">EfíBank</div>
+                    <div class="status-desc">PIX e cartões brasileiros - Produção</div>
+                </div>
+            </div>
+            
+            <div class="status-item">
+                <span class="status-icon">⏸️</span>
+                <div class="status-text">
+                    <div class="status-label">Adyen</div>
+                    <div class="status-desc">Desabilitado por padrão</div>
+                </div>
+            </div>
+            
+            <div class="status-item">
+                <span class="status-icon">⏸️</span>
+                <div class="status-text">
+                    <div class="status-label">Witetec</div>
+                    <div class="status-desc">Desabilitado por padrão</div>
+                </div>
+            </div>
+        </div>
+        
+        <button class="btn" onclick="activatePayments()" id="activateBtn">
+            Ativar Todas as Integrações
+        </button>
+        
+        <div class="log" id="log"></div>
+    </div>
+    
+    <script>
+        function addLog(message, type = 'info') {
+            const log = document.getElementById('log');
+            log.classList.add('show');
+            const line = document.createElement('div');
+            line.className = `log-line ${type}`;
+            line.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+            log.appendChild(line);
+            log.scrollTop = log.scrollHeight;
+        }
+        
+        async function activatePayments() {
+            const btn = document.getElementById('activateBtn');
+            btn.disabled = true;
+            btn.textContent = 'Processando...';
+            
+            addLog('🚀 Iniciando ativação de pagamentos...', 'info');
+            
+            // Primeiro, redirecionar para login se necessário
+            addLog('🔐 Redirecionando para autenticação...', 'info');
+            
+            // Redirecionar para a página de configuração de pagamentos do admin
+            setTimeout(() => {
+                window.location.href = '/admin/payment-config';
+            }, 1000);
+        }
+        
+        // Verificar se está autenticado
+        window.addEventListener('DOMContentLoaded', () => {
+            addLog('✅ Página carregada', 'success');
+            addLog('💡 Clique no botão para ir ao painel de configurações', 'info');
+        });
+    </script>
+</body>
+</html>

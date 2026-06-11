@@ -1,0 +1,24 @@
+{
+  "name": "VolatusPay",
+  "short_name": "VolatusPay",
+  "description": "Plataforma de pagamentos e monetização para criadores digitais",
+  "start_url": "/dashboard",
+  "scope": "/",
+  "display": "standalone",
+  "display_override": ["standalone", "minimal-ui"],
+  "background_color": "#ffffff",
+  "theme_color": "#2563eb",
+  "orientation": "portrait-primary",
+  "lang": "pt-BR",
+  "categories": ["finance", "business"],
+  "icons": [
+    { "src": "/favicon.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
+    { "src": "/favicon.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ],
+  "shortcuts": [
+    { "name": "Minhas Vendas", "short_name": "Vendas", "description": "Ver vendas recentes", "url": "/dashboard/sales", "icons": [{ "src": "/favicon.png", "sizes": "96x96" }] },
+    { "name": "Saldo", "short_name": "Saldo", "description": "Ver meu saldo", "url": "/dashboard/balance", "icons": [{ "src": "/favicon.png", "sizes": "96x96" }] },
+    { "name": "Meus Produtos", "short_name": "Produtos", "description": "Gerenciar produtos", "url": "/dashboard/products", "icons": [{ "src": "/favicon.png", "sizes": "96x96" }] }
+  ],
+  "prefer_related_applications": false
+}

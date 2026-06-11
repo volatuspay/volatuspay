@@ -1,0 +1,56 @@
+{
+  "rules": {
+    ".read": false,
+    ".write": false,
+
+    "tetri-system": {
+      ".read": false,
+      ".write": false
+    },
+
+    "sellers": {
+      "$sellerId": {
+        ".read": "auth != null && auth.uid === $sellerId",
+        ".write": false
+      }
+    },
+
+    "products": {
+      "$productId": {
+        "blocked": {
+          ".read": true,
+          ".write": false
+        },
+        "modules": {
+          ".read": "auth != null",
+          ".write": false
+        }
+      }
+    },
+
+    "checkouts-by-tenant": {
+      "$tenantId": {
+        ".read": "auth != null && auth.uid === $tenantId",
+        ".write": false
+      }
+    },
+
+    "orders-by-tenant": {
+      "$tenantId": {
+        ".read": "auth != null && auth.uid === $tenantId",
+        ".write": false
+      }
+    },
+
+    "system": {
+      "blockingRules": {
+        ".read": true,
+        ".write": false
+      },
+      "certificates": {
+        ".read": false,
+        ".write": false
+      }
+    }
+  }
+}

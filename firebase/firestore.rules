@@ -1,0 +1,350 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ── HELPERS ───────────────────────────────────────────────────────────
+    function isAuth()        { return request.auth != null; }
+    function isOwner(uid)    { return isAuth() && request.auth.uid == uid; }
+    function isAdmin()       { return isAuth() && (request.auth.token.admin == true || request.auth.token.superAdmin == true); }
+    function isSuperAdmin()  { return isAuth() && request.auth.token.superAdmin == true; }
+    function sellerOwned()   { return isAuth() && resource.data.sellerId == request.auth.uid; }
+    function sellerReq()     { return isAuth() && request.resource.data.sellerId == request.auth.uid; }
+
+    // ── SELLERS ────────────────────────────────────────────────────────────
+    // Cada seller lê/escreve apenas seu próprio documento
+    match /sellers/{sellerId} {
+      allow read:  if isOwner(sellerId) || isAdmin();
+      allow write: if isOwner(sellerId) || isAdmin();
+    }
+
+    // ── SESSÃO ÚNICA (Single Session System) ──────────────────────────────
+    match /sessions/{userId} {
+      allow read, write: if isOwner(userId) || isAdmin();
+    }
+
+    // ── TENANTS ────────────────────────────────────────────────────────────
+    // Leitura pública de tenants ativos (necessário para checkout público)
+    // Escrita apenas servidor (Admin SDK)
+    match /tenants/{tenantId} {
+      allow read:   if true;
+      allow create: if isAuth() && request.resource.data.ownerId == request.auth.uid;
+      allow update: if isAdmin() || (isAuth() && resource.data.ownerId == request.auth.uid);
+      allow delete: if isAdmin();
+    }
+
+    match /tenantSettings/{tenantId} {
+      allow read:  if isAuth();
+      allow write: if isAdmin();
+    }
+
+    // ── PRODUTOS ────────────────────────────────────────────────────────────
+    // Sellers veem e editam os próprios; produtos ativos são públicos (checkout)
+    match /products/{productId} {
+      allow read:  if sellerOwned() || isAdmin() || resource.data.isActive == true;
+      allow write: if (sellerOwned() || sellerReq() || isAdmin());
+    }
+
+    match /productOffers/{offerId} {
+      allow read:  if isAuth();
+      allow write: if isAdmin();
+    }
+
+    // ── CHECKOUTS ──────────────────────────────────────────────────────────
+    // Checkouts ativos são lidos sem auth (página de checkout pública)
+    match /checkouts/{checkoutId} {
+      allow read:  if sellerOwned() || isAdmin() || resource.data.isActive == true;
+      allow write: if sellerOwned() || sellerReq() || isAdmin();
+    }
+
+    // ── ORDERS ────────────────────────────────────────────────────────────
+    // Client só lê pedidos próprios; escrita exclusiva do servidor
+    match /orders/{orderId} {
+      allow read:  if isAuth() && (sellerOwned() || resource.data.customerId == request.auth.uid || isAdmin());
+      allow write: if false;
+    }
+
+    // ── ÁREA DE MEMBROS ────────────────────────────────────────────────────
+    match /memberAreas/{productId} {
+      allow read:  if isAuth();
+      allow write: if sellerOwned() || sellerReq() || isAdmin();
+    }
+
+    match /modules/{moduleId} {
+      allow read:  if isAuth();
+      allow write: if sellerOwned() || sellerReq() || isAdmin();
+    }
+
+    match /lessons/{lessonId} {
+      allow read:  if isAuth();
+      allow write: if sellerOwned() || sellerReq() || isAdmin();
+    }
+
+    match /members/{memberId} {
+      allow read:  if isAuth() && (isOwner(memberId) || sellerOwned() || isAdmin());
+      allow write: if false;
+    }
+
+    match /enrollments/{enrollmentId} {
+      allow read:  if isAuth() && (
+        resource.data.customerId == request.auth.uid ||
+        sellerOwned() || isAdmin()
+      );
+      allow write: if false;
+    }
+
+    match /memberEntitlements/{uid} {
+      allow read:  if isOwner(uid) || isAdmin();
+      allow write: if false;
+    }
+
+    // ── CLIENTES ──────────────────────────────────────────────────────────
+    match /customers/{customerId} {
+      allow read:  if isOwner(customerId) || sellerOwned() || isAdmin();
+      allow write: if false;
+    }
+
+    // ── BANNERS ────────────────────────────────────────────────────────────
+    match /banners/{bannerId} {
+      allow read:  if isAuth();
+      allow write: if isAdmin();
+    }
+
+    // ── COUPONS ────────────────────────────────────────────────────────────
+    match /coupons/{couponId} {
+      allow read:  if isAuth() && (sellerOwned() || isAdmin());
+      allow write: if isAuth() && (sellerOwned() || sellerReq() || isAdmin());
+    }
+
+    // ── TESTIMONIALS ──────────────────────────────────────────────────────
+    match /testimonials/{testimonialId} {
+      allow read:  if isAuth();
+      allow write: if sellerOwned() || sellerReq() || isAdmin();
+    }
+
+    // ── AFFILIADOS ────────────────────────────────────────────────────────
+    match /affiliates/{affiliateId} {
+      allow read:  if isAuth() && (
+        sellerOwned() || isAdmin() ||
+        resource.data.affiliateId == request.auth.uid
+      );
+      allow write: if false;
+    }
+
+    match /affiliations/{affiliationId} {
+      allow read:  if isAuth() && (
+        sellerOwned() || isAdmin() ||
+        resource.data.affiliateUserId == request.auth.uid
+      );
+      allow write: if false;
+    }
+
+    match /affiliateCommissions/{docId} {
+      allow read:  if isAuth() && (sellerOwned() || isAdmin() || resource.data.affiliateId == request.auth.uid);
+      allow write: if false;
+    }
+
+    // ── SAQUES ────────────────────────────────────────────────────────────
+    match /withdrawals/{withdrawalId} {
+      allow read:  if isAuth() && (sellerOwned() || isAdmin());
+      allow write: if false;
+    }
+
+    // ── VENDAS / PERSONAL SALES ────────────────────────────────────────────
+    match /sales/{docId} {
+      allow read:  if isAuth() && (sellerOwned() || isAdmin());
+      allow write: if false;
+    }
+
+    match /personalSales/{docId} {
+      allow read:  if isAuth() && (sellerOwned() || isAdmin());
+      allow write: if false;
+    }
+
+    // ── SUBSCRIPTIONS ─────────────────────────────────────────────────────
+    match /subscriptions/{docId} {
+      allow read:  if isAuth() && (
+        sellerOwned() || isAdmin() ||
+        resource.data.customerId == request.auth.uid
+      );
+      allow write: if false;
+    }
+
+    // ── TICKETS DE SUPORTE ────────────────────────────────────────────────
+    match /supportTickets/{ticketId} {
+      allow read:   if isAuth() && (sellerOwned() || isAdmin());
+      allow create: if isAuth();
+      allow update: if isAuth() && (sellerOwned() || isAdmin());
+      allow delete: if isAdmin();
+    }
+
+    match /supportMessages/{messageId} {
+      allow read:   if isAuth() && (resource.data.sellerId == request.auth.uid || isAdmin());
+      allow create: if isAuth();
+      allow update, delete: if false;
+    }
+
+    // ── PIXELS / INTEGRAÇÕES ──────────────────────────────────────────────
+    match /pixels/{docId} {
+      allow read:  if isAuth() && (sellerOwned() || isAdmin());
+      allow write: if isAuth() && (sellerOwned() || sellerReq() || isAdmin());
+    }
+
+    match /integrations/{docId} {
+      allow read:  if isAuth() && (sellerOwned() || isAdmin());
+      allow write: if isAuth() && (sellerOwned() || sellerReq() || isAdmin());
+    }
+
+    // ── SALDOS (só leitura do próprio; escrita exclusiva servidor) ─────────
+    match /sellerBalances/{uid} {
+      allow read:  if isOwner(uid) || isAdmin();
+      allow write: if false;
+    }
+
+    match /affiliateBalances/{uid} {
+      allow read:  if isOwner(uid) || isAdmin();
+      allow write: if false;
+    }
+
+    match /balanceMovements/{docId} {
+      allow read:  if isAuth() && (resource.data.sellerId == request.auth.uid || isAdmin());
+      allow write: if false;
+    }
+
+    match /refundRequests/{docId} {
+      allow read:  if isAuth() && (sellerOwned() || isAdmin());
+      allow write: if false;
+    }
+
+    match /refunds/{docId} {
+      allow read:  if isAuth() && (sellerOwned() || isAdmin());
+      allow write: if false;
+    }
+
+    // ── CONFIGURAÇÕES (leitura autenticada; escrita admin) ────────────────
+    match /appConfig/{docId} {
+      allow read:  if isAuth();
+      allow write: if isAdmin();
+    }
+
+    match /config/{docId} {
+      allow read:  if isAuth();
+      allow write: if isAdmin();
+    }
+
+    match /globalFeeConfig/{docId} {
+      allow read:  if isAuth();
+      allow write: if isAdmin();
+    }
+
+    match /sellerFeeOverrides/{docId} {
+      allow read:  if isOwner(docId) || isAdmin();
+      allow write: if isAdmin();
+    }
+
+    // ── PREMIÇÕES / INSPIRATIONS ──────────────────────────────────────────
+    match /premiations/{docId} {
+      allow read:  if isAuth();
+      allow write: if isAdmin();
+    }
+
+    // ── PRESENCE ──────────────────────────────────────────────────────────
+    match /presence/{userId} {
+      allow read:  if isAuth();
+      allow write: if isOwner(userId);
+    }
+
+    // ── 2FA SESSIONS (somente leitura do próprio) ─────────────────────────
+    match /seller-2fa-preferences/{docId} {
+      allow read:  if isOwner(docId) || isAdmin();
+      allow write: if false;
+    }
+
+    match /seller-2fa-sessions/{docId} {
+      allow read:  if isOwner(docId) || isAdmin();
+      allow write: if false;
+    }
+
+    // ── SHOWCASE ──────────────────────────────────────────────────────────
+    match /showcases/{docId} {
+      allow read:  if true;
+      allow write: if isAdmin();
+    }
+
+    // ── API KEYS ──────────────────────────────────────────────────────────
+    match /apiKeys/{docId} {
+      allow read:  if isAuth() && (sellerOwned() || isAdmin());
+      allow write: if false;
+    }
+
+    // ── WEBHOOKS ──────────────────────────────────────────────────────────
+    match /webhooks/{docId} {
+      allow read:  if isAuth() && (sellerOwned() || isAdmin());
+      allow write: if false;
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════
+    // BLOQUEIO TOTAL — Coleções admin/segurança/financeiro interno
+    // Server usa Admin SDK, nunca precisa de acesso via client SDK
+    // ═══════════════════════════════════════════════════════════════════════
+
+    match /teamMembers/{docId}             { allow read, write: if false; }
+    match /adminUsers/{docId}              { allow read, write: if false; }
+    match /admin-2fa-sessions/{docId}      { allow read, write: if false; }
+    match /adminAuditLogs/{docId}          { allow read, write: if false; }
+    match /adminAudit/{docId}              { allow read, write: if false; }
+    match /adminAlerts/{docId}             { allow read, write: if false; }
+    match /adminConfigurations/{docId}     { allow read, write: if false; }
+    match /paymentConfig/{docId}           { allow read, write: if false; }
+    match /security/{docId}               { allow read, write: if false; }
+    match /securityConfig/{docId}          { allow read, write: if false; }
+    match /securityLogs/{docId}            { allow read, write: if false; }
+    match /security_logs/{docId}           { allow read, write: if false; }
+    match /security_ip_blacklist/{docId}   { allow read, write: if false; }
+    match /blockedEntities/{docId}         { allow read, write: if false; }
+    match /blocked_ips/{docId}             { allow read, write: if false; }
+    match /blockedIPs/{docId}              { allow read, write: if false; }
+    match /fraudAlerts/{docId}            { allow read, write: if false; }
+    match /riskAlerts/{docId}             { allow read, write: if false; }
+    match /disputeAlerts/{docId}          { allow read, write: if false; }
+    match /carding_alerts/{docId}         { allow read, write: if false; }
+    match /pendingBlocks/{docId}          { allow read, write: if false; }
+    match /ipIntelligence/{docId}         { allow read, write: if false; }
+    match /idempotency_keys/{docId}       { allow read, write: if false; }
+    match /idempotencyLocks/{docId}       { allow read, write: if false; }
+    match /seller-totp/{docId}            { allow read, write: if false; }
+    match /seller-totp-pending/{docId}    { allow read, write: if false; }
+    match /seller-session-revocations/{docId} { allow read, write: if false; }
+    match /sellerDocumentLogs/{docId}     { allow read, write: if false; }
+    match /seller-known-devices/{docId}   { allow read, write: if false; }
+    match /seller-transaction-limits/{docId} { allow read, write: if false; }
+    match /seller-daily-totals/{docId}    { allow read, write: if false; }
+    match /checkoutAnalytics/{docId}      { allow read, write: if false; }
+    match /checkoutEvents/{docId}         { allow read, write: if false; }
+    match /auditLogs/{docId}              { allow read, write: if false; }
+    match /payment-audit-logs/{docId}     { allow read, write: if false; }
+    match /webhookLogs/{docId}            { allow read, write: if false; }
+    match /webhook_processed/{docId}      { allow read, write: if false; }
+    match /webhookProcessing/{docId}      { allow read, write: if false; }
+    match /processedWebhooks/{docId}      { allow read, write: if false; }
+    match /utmifyLogs/{docId}             { allow read, write: if false; }
+    match /facialVerificationLogs/{docId} { allow read, write: if false; }
+    match /balanceReconciliations/{docId} { allow read, write: if false; }
+    match /medAlerts/{docId}              { allow read, write: if false; }
+    match /abandonedCartRecovery/{docId}  { allow read, write: if false; }
+    match /affiliate_clicks/{docId}       { allow read, write: if false; }
+    match /affiliate_commissions/{docId}  { allow read, write: if false; }
+    match /affiliateWithdrawals/{docId}   { allow read, write: if false; }
+    match /orphanedCommissions/{docId}    { allow read, write: if false; }
+    match /coproduction_commissions/{docId} { allow read, write: if false; }
+    match /coproduction_contracts/{docId} { allow read, write: if false; }
+    match /refund_balances/{docId}        { allow read, write: if false; }
+    match /refund_debits/{docId}          { allow read, write: if false; }
+    match /inspiration_analytics/{docId}  { allow read, write: if false; }
+    match /customer_withdrawals/{docId}   { allow read, write: if false; }
+
+    // ── CATCH-ALL: bloqueia QUALQUER outra coleção não mapeada ────────────
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

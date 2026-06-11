@@ -1,0 +1,1888 @@
+/* magnora-pay-build-v5 */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root { --mp-build: "v6"; }
+
+/* ── MOBILE VIEWPORT FIX: garante que páginas de auth cubram a tela mesmo com teclado aberto ── */
+.auth-page-container {
+  min-height: 100vh;        /* fallback para browsers sem suporte a dvh */
+  min-height: 100dvh;       /* browsers modernos: não colapsa ao abrir teclado */
+}
+.auth-panel-height {
+  min-height: 100vh;
+  min-height: 100dvh;
+}
+
+/* 🎨 FONTE PROFISSIONAL - SaaS Grade (Inter - mesma do Stripe) */
+* {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
+  letter-spacing: -0.011em;
+}
+
+/* Números com proporção tabular para alinhar valores */
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+}
+
+/* 🔥 STRIPE-STYLE: Cards Profissionais */
+[class*="Card"],
+[class*="card"],
+.card {
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  box-shadow: 
+    0 1px 3px 0 rgba(0, 0, 0, 0.04),
+    0 0 0 1px rgba(0, 0, 0, 0.02);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Dark mode cards - Flutuantes com Glassmorphism */
+.dark [class*="Card"],
+.dark [class*="card"],
+.dark .card {
+  background: hsl(214 100% 6% / 0.92) !important;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(37, 99, 235, 0.15);
+  box-shadow: 
+    0 4px 16px 0 rgba(0, 0, 0, 0.3),
+    0 0 0 1px rgba(37, 99, 235, 0.08);
+}
+
+/* Hover - Elevação Stripe */
+[class*="Card"]:hover,
+[class*="card"]:hover,
+.card:hover {
+  box-shadow: 
+    0 4px 12px 0 rgba(0, 0, 0, 0.08),
+    0 2px 4px 0 rgba(0, 0, 0, 0.04),
+    0 0 0 1px rgba(0, 0, 0, 0.03);
+  transform: translateY(-2px);
+}
+
+/* Dark mode cards - Hover com sombra verde clara */
+.dark [class*="Card"]:hover,
+.dark [class*="card"]:hover,
+.dark .card:hover {
+  background: rgba(12, 18, 42, 0.7) !important;
+  border-color: rgba(37, 99, 235, 0.35);
+  box-shadow: 
+    0 8px 32px 0 rgba(37, 99, 235, 0.15),
+    0 4px 16px 0 rgba(37, 99, 235, 0.1),
+    0 0 0 1px rgba(37, 99, 235, 0.25);
+  transform: translateY(-3px);
+}
+
+/* ☀️ LIGHT MODE - Cards brancos premium estilo Stripe */
+html:not(.dark) [class*="Card"],
+html:not(.dark) [class*="card"],
+html:not(.dark) .card {
+  background: #ffffff !important;
+  border: 1px solid rgba(37, 99, 235, 0.12);
+  box-shadow:
+    0 1px 4px 0 rgba(37, 99, 235, 0.06),
+    0 0 0 1px rgba(37, 99, 235, 0.04);
+}
+
+html:not(.dark) [class*="Card"]:hover,
+html:not(.dark) [class*="card"]:hover,
+html:not(.dark) .card:hover {
+  border-color: rgba(37, 99, 235, 0.22);
+  box-shadow:
+    0 4px 16px 0 rgba(37, 99, 235, 0.1),
+    0 1px 4px 0 rgba(37, 99, 235, 0.06),
+    0 0 0 1px rgba(37, 99, 235, 0.08);
+  transform: translateY(-2px);
+}
+
+/* 🔥 STRIPE-STYLE: Botões Profissionais */
+button,
+[role="button"] {
+  font-weight: 500;
+  transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+  border-radius: 6px;
+}
+
+button:hover:not(:disabled),
+[role="button"]:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.12);
+}
+
+button:active:not(:disabled),
+[role="button"]:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+/* 🔥 STRIPE-STYLE: Inputs Profissionais */
+input,
+textarea,
+select {
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+  outline: none;
+}
+
+.dark input,
+.dark textarea,
+.dark select {
+  background: rgba(8, 14, 30, 0.7) !important;
+  border: 1px solid rgba(37, 99, 235, 0.15);
+  color: hsl(0 0% 98%);
+}
+
+.dark input:focus,
+.dark textarea:focus,
+.dark select:focus {
+  background: rgba(10, 16, 34, 0.8) !important;
+  border-color: rgba(37, 99, 235, 0.5);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+}
+
+/* 🌞 TEMA CLARO FORÇADO para formulários específicos - Alta especificidade */
+/* Força fundo branco na página inteira */
+.dark .force-light-theme {
+  background-color: white !important;
+  color: #111827 !important;
+}
+
+.dark .force-light-theme header {
+  background-color: white !important;
+}
+
+.dark .force-light-theme aside {
+  background-color: #fafafa !important;
+}
+
+.dark .force-light-theme footer {
+  background-color: white !important;
+}
+
+.dark .force-light-theme main {
+  background-color: white !important;
+}
+
+.force-light-theme input,
+.force-light-theme textarea,
+.force-light-theme select,
+.dark .force-light-theme input,
+.dark .force-light-theme textarea,
+.dark .force-light-theme select {
+  background: white !important;
+  color: #111827 !important;
+  border: 1px solid #d1d5db !important;
+}
+
+.force-light-theme input::placeholder,
+.force-light-theme textarea::placeholder,
+.dark .force-light-theme input::placeholder,
+.dark .force-light-theme textarea::placeholder {
+  color: #9ca3af !important;
+}
+
+.force-light-theme input:focus,
+.force-light-theme textarea:focus,
+.force-light-theme select:focus,
+.dark .force-light-theme input:focus,
+.dark .force-light-theme textarea:focus,
+.dark .force-light-theme select:focus {
+  background: white !important;
+  border-color: #2563eb !important;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1) !important;
+}
+
+.force-light-theme label,
+.force-light-theme .text-sm,
+.force-light-theme p,
+.dark .force-light-theme label,
+.dark .force-light-theme .text-sm,
+.dark .force-light-theme p {
+  color: #374151 !important;
+}
+
+.force-light-theme h1,
+.force-light-theme h2,
+.force-light-theme h3,
+.force-light-theme h4,
+.dark .force-light-theme h1,
+.dark .force-light-theme h2,
+.dark .force-light-theme h3,
+.dark .force-light-theme h4 {
+  color: #111827 !important;
+}
+
+/* Força cards dentro do tema claro para branco - SEM HOVER */
+/* IMPORTANTE: NÃO aplicar em .force-light-theme diretamente, apenas nos filhos .bg-white */
+.force-light-theme .bg-white,
+.force-light-theme [class*="Card"],
+.dark .force-light-theme .bg-white,
+.dark .force-light-theme [class*="Card"] {
+  background: white !important;
+  transform: none !important;
+}
+
+/* Remove TODOS os efeitos de hover no tema claro para cards */
+.force-light-theme .bg-white:hover,
+.force-light-theme [class*="Card"]:hover,
+.dark .force-light-theme .bg-white:hover,
+.dark .force-light-theme [class*="Card"]:hover {
+  background: white !important;
+  transform: none !important;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.04), 0 0 0 1px rgba(0, 0, 0, 0.02) !important;
+}
+
+.force-light-theme code,
+.force-light-theme pre,
+.dark .force-light-theme code,
+.dark .force-light-theme pre {
+  color: #374151 !important;
+}
+
+.force-light-theme li,
+.force-light-theme ul,
+.force-light-theme ol,
+.force-light-theme span,
+.force-light-theme strong,
+.dark .force-light-theme li,
+.dark .force-light-theme ul,
+.dark .force-light-theme ol,
+.dark .force-light-theme span,
+.dark .force-light-theme strong {
+  color: inherit;
+}
+
+.force-light-theme [class*="Card"] *,
+.dark .force-light-theme [class*="Card"] * {
+  color: #374151;
+}
+
+.force-light-theme [class*="Card"] h1,
+.force-light-theme [class*="Card"] h2,
+.force-light-theme [class*="Card"] h3,
+.force-light-theme [class*="Card"] h4,
+.force-light-theme [class*="Card"] strong,
+.dark .force-light-theme [class*="Card"] h1,
+.dark .force-light-theme [class*="Card"] h2,
+.dark .force-light-theme [class*="Card"] h3,
+.dark .force-light-theme [class*="Card"] h4,
+.dark .force-light-theme [class*="Card"] strong {
+  color: #111827 !important;
+}
+
+.force-light-theme [class*="Card"] .text-gray-500,
+.force-light-theme [class*="Card"] .text-gray-600,
+.dark .force-light-theme [class*="Card"] .text-gray-500,
+.dark .force-light-theme [class*="Card"] .text-gray-600 {
+  color: #6b7280 !important;
+}
+
+.force-light-theme [class*="Badge"],
+.dark .force-light-theme [class*="Badge"] {
+  color: #2563eb !important;
+  background: #eff6ff !important;
+}
+
+.force-light-theme button,
+.dark .force-light-theme button {
+  color: inherit;
+}
+
+.force-light-theme button:hover,
+.dark .force-light-theme button:hover {
+  background-color: #f3f4f6 !important;
+  color: #111827 !important;
+}
+
+.force-light-theme button[data-payment-btn],
+.dark .force-light-theme button[data-payment-btn] {
+  background-color: #16a34a !important;
+  color: #ffffff !important;
+}
+
+.force-light-theme button[data-payment-btn]:hover,
+.dark .force-light-theme button[data-payment-btn]:hover {
+  background-color: #15803d !important;
+  color: #ffffff !important;
+}
+
+.force-light-theme button[data-variant="outline"]:hover,
+.dark .force-light-theme button[data-variant="outline"]:hover,
+.force-light-theme [class*="variant-outline"]:hover,
+.dark .force-light-theme [class*="variant-outline"]:hover {
+  background-color: #f3f4f6 !important;
+  color: #111827 !important;
+}
+
+.force-light-theme [class*="Badge"]:hover,
+.dark .force-light-theme [class*="Badge"]:hover {
+  background: #eff6ff !important;
+  color: #2563eb !important;
+}
+
+.force-light-theme [class*="border"],
+.dark .force-light-theme [class*="border"] {
+  border-color: #e5e7eb;
+}
+
+.force-light-theme [class*="bg-purple-"],
+.dark .force-light-theme [class*="bg-purple-"] {
+  background-color: #eff6ff !important;
+  color: #374151 !important;
+}
+
+.force-light-theme [class*="bg-green-"],
+.dark .force-light-theme [class*="bg-green-"] {
+  background-color: #eff6ff !important;
+  color: #374151 !important;
+}
+
+.force-light-theme [class*="bg-gray-100"],
+.force-light-theme [class*="bg-gray-50"],
+.dark .force-light-theme [class*="bg-gray-100"],
+.dark .force-light-theme [class*="bg-gray-50"] {
+  background-color: #f3f4f6 !important;
+}
+
+.force-light-theme .bg-purple-100,
+.dark .force-light-theme .bg-purple-100 {
+  background-color: #dbeafe !important;
+}
+
+.force-light-theme div,
+.dark .force-light-theme div {
+  color: inherit;
+}
+
+.force-light-theme a,
+.dark .force-light-theme a {
+  color: inherit;
+}
+
+.force-light-theme .text-purple-600,
+.force-light-theme .text-purple-700,
+.dark .force-light-theme .text-purple-600,
+.dark .force-light-theme .text-purple-700 {
+  color: #2563eb !important;
+}
+
+.force-light-theme svg,
+.dark .force-light-theme svg {
+  color: inherit !important;
+}
+
+.force-light-theme table th,
+.dark .force-light-theme table th {
+  color: #2563eb !important;
+}
+
+.force-light-theme table td,
+.dark .force-light-theme table td {
+  color: #374151 !important;
+}
+
+.force-light-theme .text-gray-900,
+.dark .force-light-theme .text-gray-900 {
+  color: #111827 !important;
+}
+
+.force-light-theme .text-gray-700,
+.dark .force-light-theme .text-gray-700 {
+  color: #374151 !important;
+}
+
+.force-light-theme .text-gray-600,
+.dark .force-light-theme .text-gray-600 {
+  color: #4b5563 !important;
+}
+
+.force-light-theme .text-gray-500,
+.dark .force-light-theme .text-gray-500 {
+  color: #6b7280 !important;
+}
+
+/* 🔥 STRIPE-STYLE: Dialogs/Popups Profissionais */
+[role="dialog"],
+[role="alertdialog"],
+.dialog,
+.modal {
+  border-radius: 12px;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  box-shadow: 
+    0 24px 48px rgba(0, 0, 0, 0.12),
+    0 12px 24px rgba(0, 0, 0, 0.08),
+    0 0 0 1px rgba(0, 0, 0, 0.04);
+  animation: fadeInScale 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.dark [role="dialog"],
+.dark [role="alertdialog"],
+.dark .dialog,
+.dark .modal {
+  background: rgba(8, 14, 30, 0.9) !important;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(37, 99, 235, 0.2);
+  box-shadow: 
+    0 24px 48px rgba(0, 0, 0, 0.5),
+    0 12px 24px rgba(37, 99, 235, 0.08),
+    0 0 0 1px rgba(37, 99, 235, 0.1);
+}
+
+@keyframes fadeInScale {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* 🔥 STRIPE-STYLE: Dropdowns Profissionais */
+[role="menu"],
+[role="listbox"],
+.dropdown-content {
+  border-radius: 8px;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  box-shadow: 
+    0 8px 24px rgba(0, 0, 0, 0.12),
+    0 4px 8px rgba(0, 0, 0, 0.06),
+    0 0 0 1px rgba(0, 0, 0, 0.04);
+  animation: fadeInScale 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.dark [role="menu"],
+.dark [role="listbox"],
+.dark .dropdown-content {
+  background: rgba(8, 14, 30, 0.95) !important;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(37, 99, 235, 0.2);
+  box-shadow: 
+    0 8px 24px rgba(0, 0, 0, 0.4),
+    0 4px 8px rgba(37, 99, 235, 0.08),
+    0 0 0 1px rgba(37, 99, 235, 0.1);
+}
+
+/* 🎨 GLASSMORPHISM - Classe Utilitária Opcional */
+.glass-card {
+  background: rgba(255, 255, 255, 0.03) !important;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  box-shadow: 
+    0 4px 12px 0 rgba(0, 0, 0, 0.3),
+    0 0 0 1px rgba(255, 255, 255, 0.05),
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.08) !important;
+}
+
+.glass-card:hover {
+  background: rgba(255, 255, 255, 0.05) !important;
+  border-color: rgba(37, 99, 235, 0.3) !important;
+  box-shadow: 
+    0 8px 24px 0 rgba(0, 0, 0, 0.4),
+    0 4px 8px 0 rgba(37, 99, 235, 0.15),
+    0 0 0 1px rgba(37, 99, 235, 0.25),
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.12) !important;
+}
+
+/* 🔥 STRIPE-STYLE: Badges e Tags */
+.badge,
+[class*="badge"] {
+  font-weight: 500;
+  font-size: 0.75rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: 6px;
+  letter-spacing: 0.02em;
+}
+
+/* 🔥 STRIPE-STYLE: Smooth Scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* 🔥 STRIPE-STYLE: Links Profissionais */
+a {
+  transition: color 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+  text-decoration: none;
+}
+
+a:hover {
+  opacity: 0.8;
+}
+
+/* 🔥 STRIPE-STYLE: Gráfico Picos de Vendas - Hover Premium */
+.recharts-wrapper,
+.recharts-surface {
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Charts hover effect */
+.recharts-line-curve:hover,
+.recharts-bar-rectangle:hover {
+  filter: brightness(1.1);
+  transition: filter 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Tooltip profissional */
+.recharts-tooltip-wrapper {
+  filter: drop-shadow(0 8px 24px rgba(0, 0, 0, 0.15));
+  animation: fadeInScale 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* 🔥 STRIPE-STYLE: Tabelas Profissionais */
+table {
+  border-spacing: 0;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+thead {
+  background: rgba(0, 0, 0, 0.02);
+}
+
+.dark thead {
+  background: hsl(0 0% 6%);
+}
+
+tbody tr {
+  transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.dark tbody tr {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+tbody tr:hover {
+  background: rgba(0, 0, 0, 0.02);
+  transform: scale(1.005);
+}
+
+.dark tbody tr:hover {
+  background: hsl(0 0% 8%);
+}
+
+th, td {
+  padding: 0.875rem 1rem;
+  text-align: left;
+}
+
+th {
+  font-weight: 600;
+  font-size: 0.875rem;
+  color: rgba(0, 0, 0, 0.6);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.dark th {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+/* 🔥 STRIPE-STYLE: Tabs/Abas Profissionais */
+[role="tablist"],
+.tabs-list {
+  background: rgba(0, 0, 0, 0.02);
+  border-radius: 8px;
+  padding: 0.25rem;
+}
+
+.dark [role="tablist"],
+.dark .tabs-list {
+  background: hsl(0 0% 6%);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+[role="tab"],
+.tab-trigger {
+  font-weight: 500;
+  font-size: 0.875rem;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+  color: rgba(0, 0, 0, 0.6);
+}
+
+.dark [role="tab"],
+.dark .tab-trigger {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+[role="tab"]:hover,
+.tab-trigger:hover {
+  background: rgba(0, 0, 0, 0.04);
+  color: rgba(0, 0, 0, 0.9);
+}
+
+.dark [role="tab"]:hover,
+.dark .tab-trigger:hover {
+  background: hsl(0 0% 10%);
+  color: hsl(0 0% 98%);
+}
+
+[role="tab"][data-state="active"],
+.tab-trigger[data-state="active"] {
+  background: white;
+  color: rgba(0, 0, 0, 0.9);
+  box-shadow: 
+    0 1px 3px 0 rgba(0, 0, 0, 0.08),
+    0 0 0 1px rgba(0, 0, 0, 0.04);
+}
+
+.dark [role="tab"][data-state="active"],
+.dark .tab-trigger[data-state="active"] {
+  background: hsl(0 0% 12%);
+  color: hsl(0 0% 98%);
+  box-shadow: 
+    0 1px 3px 0 rgba(0, 0, 0, 0.4),
+    0 0 0 1px rgba(37, 99, 235, 0.35);
+}
+
+/* 🔥 STRIPE-STYLE: Lista de Produtos/Vitrine */
+.product-grid,
+[class*="grid"] {
+  gap: 1.5rem;
+}
+
+.product-card,
+[class*="product"] {
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.product-card:hover,
+[class*="product"]:hover {
+  transform: translateY(-4px);
+  box-shadow: 
+    0 12px 32px rgba(0, 0, 0, 0.1),
+    0 4px 8px rgba(0, 0, 0, 0.06),
+    0 0 0 1px rgba(0, 0, 0, 0.04);
+}
+
+.dark .product-card:hover,
+.dark [class*="product"]:hover {
+  box-shadow: 
+    0 12px 32px rgba(0, 0, 0, 0.5),
+    0 4px 8px rgba(0, 0, 0, 0.3),
+    0 0 0 1px rgba(255, 255, 255, 0.1);
+}
+
+/* 🔥 STRIPE-STYLE: Status Badges */
+.status-badge,
+[class*="status"] {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.25rem 0.625rem;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+}
+
+.status-badge::before,
+[class*="status"]::before {
+  content: '';
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+}
+
+/* 🔥 STRIPE-STYLE: Formulários Complexos */
+.form-group,
+.field-group {
+  margin-bottom: 1.25rem;
+}
+
+label {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+  color: rgba(0, 0, 0, 0.8);
+}
+
+.dark label {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+/* 🔥 STRIPE-STYLE: Skeleton Loaders */
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    rgba(0, 0, 0, 0.06) 0%,
+    rgba(0, 0, 0, 0.12) 50%,
+    rgba(0, 0, 0, 0.06) 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: 6px;
+}
+
+.dark .skeleton {
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.06) 0%,
+    rgba(255, 255, 255, 0.12) 50%,
+    rgba(255, 255, 255, 0.06) 100%
+  );
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+/* 🔥 MOBILE FIX: PREVENIR SCROLL HORIZONTAL (SEM QUEBRAR LAYOUTS) */
+html, body {
+  width: 100%;
+  position: relative;
+}
+
+body {
+  overscroll-behavior-x: none;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* 🔥 MOBILE: REMOVER EFEITO FLASH BRANCO AO TOCAR (mantém funcionalidades iOS) */
+* {
+  -webkit-tap-highlight-color: transparent;
+  tap-highlight-color: transparent;
+}
+
+/* ── DARK MODE: bg-white / border-gray-* overrides ─────────────────────────
+   Cobre todas as classes hardcoded de light mode para que o dark seja
+   consistente sem precisar reescrever cada componente individualmente.      */
+
+/* Backgrounds
+   NOTA: --card, --muted etc. já contêm hsl() no valor → usar var() direto  */
+.dark .bg-white {
+  background-color: var(--card) !important;
+  color: var(--card-foreground) !important;
+}
+.dark .bg-gray-50,
+.dark .bg-gray-100 {
+  background-color: var(--muted) !important;
+}
+.dark .bg-blue-50,
+.dark .bg-cyan-50,
+.dark .bg-orange-50 {
+  background-color: hsl(214 100% 7%) !important;
+}
+.dark .bg-red-50 {
+  background-color: hsl(0 30% 7%) !important;
+}
+
+/* Borders — gray
+   NOTA: --border já contém hsl() → var(--border) direto                    */
+.dark .border-gray-100,
+.dark .border-gray-200,
+.dark .border-gray-300,
+.dark .border-gray-400 {
+  border-color: var(--border) !important;
+}
+.dark .border-gray-200\/50 {
+  border-color: rgba(37, 99, 235, 0.15) !important;
+}
+
+/* Borders — azul/ciano/laranja/vermelho (alertas, detalhes de pedido) */
+.dark .border-blue-200,
+.dark .border-blue-300,
+.dark .border-cyan-200,
+.dark .border-orange-200 {
+  border-color: rgba(37, 99, 235, 0.2) !important;
+}
+.dark .border-red-200 {
+  border-color: rgba(239, 68, 68, 0.25) !important;
+}
+
+/* Dividers de tabela (divide-y divide-gray-200 → todas as filhas) */
+.dark .divide-gray-200 > *,
+.dark .divide-y > * {
+  border-color: var(--border) !important;
+}
+
+/* Textos */
+.dark .text-gray-400,
+.dark .text-gray-500 {
+  color: var(--muted-foreground) !important;
+}
+.dark .text-gray-600,
+.dark .text-gray-700,
+.dark .text-gray-800 {
+  color: rgba(255,255,255,0.7) !important;
+}
+.dark .text-gray-900 {
+  color: var(--foreground) !important;
+}
+
+/* 🔥 DARK MODE: Cards SEMPRE PRETOS - SEM animações (DESKTOP E MOBILE) */
+.dark [class*="dark:bg-black"],
+.dark [class*="dark:bg-black"]:hover,
+.dark [class*="dark:bg-black"]:active,
+.dark [class*="dark:bg-black"]:focus,
+.dark [class*="dark:bg-black"]:focus-within,
+.dark [class*="dark:bg-black"] > * {
+  background-color: rgb(0 0 0) !important;
+  transition: none !important;
+}
+
+/* Garantir que elementos dentro do card não quebrem o fundo preto */
+.dark [class*="dark:bg-black"] [class*="bg-"] {
+  background-color: transparent !important;
+}
+
+/* Garantir que root não tenha overflow horizontal */
+#root {
+  width: 100%;
+  min-height: 100vh;
+}
+
+/* 🔥 FIX: Cards dark mode - específico para my-products */
+@media (max-width: 640px) {
+  /* Dialogs mobile-friendly */
+  [role="dialog"] {
+    max-width: 95vw;
+    max-height: 85vh;
+  }
+}
+
+/* 🔥 BUG FIX: ELIMINAR SCROLLBARS DUPLAS */
+/* Esconde scrollbars extras mantendo funcionalidade */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar:horizontal {
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(37, 99, 235, 0.3);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(37, 99, 235, 0.5);
+}
+
+/* Firefox scrollbar */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(37, 99, 235, 0.3) transparent;
+}
+
+/* 🔥 MOBILE-FIRST: Cards vibrantes no celular */
+@keyframes gradient-x {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+.card-vibrant-green {
+  background-size: 400% 400%;
+  animation: gradient-x 4s ease infinite;
+  position: relative;
+  overflow: hidden;
+}
+
+.card-vibrant-green::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(120% 80% at 50% -20%, rgba(255,255,255,0.3) 0%, rgba(155,48,255,0.4) 35%, transparent 65%);
+  pointer-events: none;
+}
+
+.card-vibrant-red {
+  background-size: 400% 400%;
+  animation: gradient-x 3s ease infinite;
+  position: relative;
+  overflow: hidden;
+}
+
+.card-vibrant-red::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(120% 80% at 50% -20%, rgba(255,255,255,0.35) 0%, rgba(239,68,68,0.45) 35%, transparent 65%);
+  pointer-events: none;
+}
+
+.card-vibrant-green-alt {
+  background-size: 400% 400%;
+  animation: gradient-x 5s ease infinite;
+  position: relative;
+  overflow: hidden;
+}
+
+.card-vibrant-green-alt::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(120% 80% at 50% -20%, rgba(255,255,255,0.3) 0%, rgba(155,48,255,0.4) 35%, transparent 65%);
+  pointer-events: none;
+}
+
+@media (min-width: 768px) {
+  .card-vibrant-green,
+  .card-vibrant-red,
+  .card-vibrant-green-alt {
+    animation-duration: 8s;
+  }
+  
+  .card-vibrant-green::before,
+  .card-vibrant-red::before,
+  .card-vibrant-green-alt::before {
+    opacity: 0.7;
+  }
+}
+
+/* 🚀 ANIMAÇÕES PROFISSIONAIS EXCLUSIVAS - RECURSOS AVANÇADOS */
+
+/* 🌟 ANIMAÇÕES DASHBOARD - EFEITOS VISUAIS INCRÍVEIS */
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes glow-pulse {
+  0%, 100% {
+    box-shadow: 0 0 20px rgba(37, 99, 235, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 40px rgba(37, 99, 235, 0.6), 0 0 60px rgba(37, 99, 235, 0.3);
+  }
+}
+
+.animate-fade-in {
+  animation: fade-in 0.6s ease-out forwards;
+  opacity: 0;
+}
+
+/* 📜 SCROLLBAR CUSTOMIZADA PARA ATIVIDADE RECENTE */
+.scrollbar-thin {
+  scrollbar-width: thin;
+}
+
+.scrollbar-thin::-webkit-scrollbar {
+  width: 6px;
+}
+
+.scrollbar-thumb-emerald-500\/30::-webkit-scrollbar-thumb,
+.scrollbar-thumb-green-600\/30::-webkit-scrollbar-thumb {
+  background-color: rgba(37, 99, 235, 0.3);
+  border-radius: 3px;
+}
+
+.scrollbar-thumb-emerald-500\/30::-webkit-scrollbar-thumb:hover,
+.scrollbar-thumb-green-600\/30::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(37, 99, 235, 0.5);
+}
+
+.scrollbar-track-transparent::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+@keyframes cloudFloat {
+  0%, 100% { 
+    transform: translateY(0px) translateX(0px) rotate(0deg);
+    opacity: 0.8;
+  }
+  25% { 
+    transform: translateY(-15px) translateX(10px) rotate(1deg);
+    opacity: 1;
+  }
+  50% { 
+    transform: translateY(-8px) translateX(-5px) rotate(-0.5deg);
+    opacity: 0.9;
+  }
+  75% { 
+    transform: translateY(-20px) translateX(8px) rotate(0.5deg);
+    opacity: 1;
+  }
+}
+
+@keyframes cardRevealCascade {
+  0% {
+    opacity: 0;
+    transform: translateY(60px) rotateX(30deg) scale(0.8);
+    filter: blur(10px);
+  }
+  60% {
+    opacity: 0.8;
+    transform: translateY(20px) rotateX(10deg) scale(0.95);
+    filter: blur(2px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) rotateX(0deg) scale(1);
+    filter: blur(0px);
+  }
+}
+
+@keyframes glowPulse {
+  0%, 100% {
+    box-shadow: 0 0 20px rgba(37, 99, 235, 0.3), 0 0 60px rgba(37, 99, 235, 0.1);
+  }
+  50% {
+    box-shadow: 0 0 40px rgba(37, 99, 235, 0.6), 0 0 100px rgba(37, 99, 235, 0.2);
+  }
+}
+
+/* 🔥 HYPE BAR - Efeito de fogo animado */
+@keyframes fireGlow {
+  0% {
+    background-position: 0% 50%;
+    filter: brightness(1);
+  }
+  25% {
+    filter: brightness(1.1);
+  }
+  50% {
+    background-position: 100% 50%;
+    filter: brightness(1.2);
+  }
+  75% {
+    filter: brightness(1.1);
+  }
+  100% {
+    background-position: 0% 50%;
+    filter: brightness(1);
+  }
+}
+
+@keyframes particleFloat {
+  0% {
+    transform: translate(0, 0) rotate(0deg);
+    opacity: 0;
+  }
+  10% {
+    opacity: 0.6;
+  }
+  90% {
+    opacity: 0.3;
+  }
+  100% {
+    transform: translate(-100px, -300px) rotate(360deg);
+    opacity: 0;
+  }
+}
+
+@keyframes iconSpin {
+  0% {
+    transform: rotateY(0deg) scale(1);
+  }
+  50% {
+    transform: rotateY(180deg) scale(1.1);
+  }
+  100% {
+    transform: rotateY(360deg) scale(1);
+  }
+}
+
+/* Classes para aplicar as animações */
+.resource-card {
+  animation: cardRevealCascade 0.8s ease-out forwards;
+  animation-fill-mode: both;
+  transform-style: preserve-3d;
+  perspective: 1000px;
+}
+
+.resource-card:nth-child(1) { animation-delay: 0.1s; }
+.resource-card:nth-child(2) { animation-delay: 0.2s; }
+.resource-card:nth-child(3) { animation-delay: 0.3s; }
+.resource-card:nth-child(4) { animation-delay: 0.4s; }
+.resource-card:nth-child(5) { animation-delay: 0.5s; }
+.resource-card:nth-child(6) { animation-delay: 0.6s; }
+.resource-card:nth-child(7) { animation-delay: 0.7s; }
+.resource-card:nth-child(8) { animation-delay: 0.8s; }
+
+.cloud-float {
+  animation: cloudFloat 8s ease-in-out infinite;
+}
+
+.cloud-float:nth-child(odd) {
+  animation-delay: -2s;
+  animation-duration: 10s;
+}
+
+.cloud-float:nth-child(even) {
+  animation-delay: -5s;
+  animation-duration: 12s;
+}
+
+.glow-pulse {
+  animation: glowPulse 3s ease-in-out infinite;
+}
+
+.particle-float {
+  animation: particleFloat 15s linear infinite;
+}
+
+.icon-spin-hover:hover .icon-inner {
+  animation: iconSpin 0.6s ease-in-out;
+}
+
+/* Hover suave e estável - Anti-flickering */
+.resource-card:hover {
+  transform: translateY(-8px) scale(1.02);
+  transition: transform 0.3s ease-out;
+  will-change: transform;
+}
+
+/* ☀️ LIGHT MODE - Paleta premium e profissional com cinzas neutros */
+:root {
+  --background: hsl(0 0% 100%);
+  --foreground: hsl(0 0% 12%);
+  --card: hsl(0 0% 100%);
+  --card-foreground: hsl(0 0% 12%);
+  --popover: hsl(0 0% 100%);
+  --popover-foreground: hsl(0 0% 12%);
+  --primary: hsl(221 83% 53%);
+  --primary-foreground: hsl(0 0% 100%);
+  --secondary: hsl(0 0% 96%);
+  --secondary-foreground: hsl(0 0% 12%);
+  --muted: hsl(0 0% 97%);
+  --muted-foreground: hsl(0 0% 45%);
+  --accent: hsl(0 0% 96%);
+  --accent-foreground: hsl(221 83% 53%);
+  --destructive: hsl(0 84% 60%);
+  --destructive-foreground: hsl(0 0% 100%);
+  --border: hsl(0 0% 88%);
+  --input: hsl(0 0% 100%);
+  --ring: hsl(221 83% 53%);
+  --chart-1: hsl(221 83% 53%);
+  --chart-2: hsl(221 83% 57%);
+  --chart-3: hsl(221 83% 61%);
+  --chart-4: hsl(221 83% 44%);
+  --chart-5: hsl(221 83% 55%);
+  --sidebar: hsl(0 0% 100%);
+  --sidebar-foreground: hsl(0 0% 12%);
+  --sidebar-primary: hsl(0 0% 96%);
+  --sidebar-primary-foreground: hsl(0 0% 12%);
+  --sidebar-accent: hsl(0 0% 96%);
+  --sidebar-accent-foreground: hsl(0 0% 12%);
+  --sidebar-border: hsl(0 0% 90%);
+  --sidebar-ring: hsl(221 83% 53%);
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  --font-serif: Georgia, serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', Menlo, monospace;
+  --radius: 0.75rem;
+  
+  /* 🌟 SOMBRAS ELEGANTES E PROFISSIONAIS */
+  --shadow-card: 0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 1px 2px -1px rgba(0, 0, 0, 0.05);
+  --shadow-card-hover: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+  --shadow-modal: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+  --shadow-dropdown: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+  
+  --shadow-2xs: var(--shadow-card);
+  --shadow-xs: var(--shadow-card);
+  --shadow-sm: var(--shadow-card);
+  --shadow: var(--shadow-card);
+  --shadow-md: var(--shadow-card-hover);
+  --shadow-lg: var(--shadow-modal);
+  --shadow-xl: var(--shadow-modal);
+  --shadow-2xl: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  --tracking-normal: 0em;
+  --spacing: 0.25rem;
+  
+  /* 🎨 BRAND COLORS - Magnora Pay Roxo #2563eb */
+  --brand: hsl(221 83% 53%);
+  --brand-foreground: hsl(0 0% 100%);
+  --brand-muted: hsl(221 90% 93%);
+  --brand-muted-foreground: hsl(221 83% 45%);
+  --brand-subtle: hsl(221 90% 97%);
+  --brand-accent: hsl(221 83% 55%);
+}
+
+/* 🌙 DARK MODE - PRETO + VERDE ESCURO PREMIUM (Magnora Pay Style) */
+.dark {
+  --background: hsl(221 100% 4%);        /* Verde muito escuro - fundo principal */
+  --foreground: hsl(0 0% 98%);          /* Branco limpo - texto principal */
+  --card: hsl(214 100% 6%);              /* Verde escuro - cards elegantes */
+  --card-foreground: hsl(0 0% 98%);     /* Branco - texto dos cards */
+  --popover: hsl(221 100% 5%);           /* Verde escuro profundo - popovers */
+  --popover-foreground: hsl(0 0% 98%);  /* Branco - texto popovers */
+  --primary: hsl(221 83% 53%);          /* Verde vivo - botões primários */
+  --primary-foreground: hsl(0 0% 100%);  /* Branco - texto botões */
+  --secondary: hsl(221 50% 9%);        /* Verde escuro médio - botões secundários */
+  --secondary-foreground: hsl(0 0% 98%);/* Branco - texto secundário */
+  --muted: hsl(214 100% 7%);            /* Verde escuro - backgrounds sutis */
+  --muted-foreground: hsl(0 0% 60%);    /* Cinza médio - texto desabilitado */
+  --accent: hsl(221 50% 9%);           /* Verde escuro médio - acentos */
+  --accent-foreground: hsl(221 83% 53%);/* Verde vivo - texto acentuado */
+  --destructive: hsl(0 84% 65%);        /* Vermelho - ações destrutivas */
+  --destructive-foreground: hsl(0 0% 100%);
+  --border: hsl(221 30% 13%);           /* Verde escuro - bordas sutis */
+  --input: hsl(214 100% 7%);             /* Verde escuro - inputs */
+  --ring: hsl(221 83% 53%);             /* Verde vivo - focus ring */
+  --chart-1: hsl(221 83% 53%);
+  --chart-2: hsl(221 83% 57%);
+  --chart-3: hsl(221 83% 61%);
+  --chart-4: hsl(221 83% 44%);
+  --chart-5: hsl(221 83% 55%);
+  --sidebar: hsl(221 100% 4%);           /* Verde muito escuro - sidebar */
+  --sidebar-foreground: hsl(0 0% 98%);  /* Branco - texto sidebar */
+  --sidebar-primary: hsl(221 83% 53%);  /* Verde vivo - itens primários */
+  --sidebar-primary-foreground: hsl(0 0% 100%);
+  --sidebar-accent: hsl(221 50% 8%);   /* Verde escuro - hover sidebar */
+  --sidebar-accent-foreground: hsl(0 0% 98%);
+  --sidebar-border: hsl(221 30% 11%);   /* Verde escuro - bordas sidebar */
+  --sidebar-ring: hsl(221 83% 53%);     /* Verde vivo - focus sidebar */
+  
+  /* 🌟 SOMBRAS PROFISSIONAIS DARK MODE */
+  --shadow-card: 0 1px 3px 0 rgba(0, 0, 0, 0.5), 0 1px 2px -1px rgba(0, 0, 0, 0.4);
+  --shadow-card-hover: 0 4px 6px -1px rgba(0, 0, 0, 0.6), 0 2px 4px -2px rgba(0, 0, 0, 0.5);
+  --shadow-modal: 0 10px 15px -3px rgba(0, 0, 0, 0.7), 0 4px 6px -4px rgba(0, 0, 0, 0.6);
+  --shadow-dropdown: 0 4px 6px -1px rgba(0, 0, 0, 0.6), 0 2px 4px -2px rgba(0, 0, 0, 0.5);
+  
+  /* 🎨 BRAND COLORS DARK MODE - Verde Neon */
+  --brand: hsl(221 83% 53%);
+  --brand-foreground: hsl(0 0% 100%);
+  --brand-muted: hsl(221 83% 45%);
+  --brand-muted-foreground: hsl(221 83% 70%);
+  --brand-subtle: hsl(221 60% 20%);
+  --brand-accent: hsl(221 83% 65%);
+}
+
+/* 🌙 DARK MODE - Fundo escuro premium verde */
+html.dark body {
+  background: linear-gradient(135deg, hsl(221 100% 4%) 0%, hsl(221 80% 5%) 50%, hsl(221 100% 4%) 100%) !important;
+  background-attachment: fixed;
+}
+
+/* ☀️ LIGHT MODE - Fundo branco limpo com gradiente sutil lavanda */
+html:not(.dark) body {
+  background: linear-gradient(to bottom right, #ffffff 0%, #f8f9fb 60%, #f0f4f8 100%) !important;
+  background-attachment: fixed;
+}
+
+/* 🎯 ANIMAÇÕES ULTRA-SOFISTICADAS PARA VENDAS GLOBAIS */
+@keyframes shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+@keyframes shimmer-reverse {
+  0% { transform: translateX(100%); }
+  100% { transform: translateX(-100%); }
+}
+
+@keyframes marquee {
+  0% { transform: translateX(100%); }
+  100% { transform: translateX(-100%); }
+}
+
+@keyframes gradient-x {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+.animate-shimmer {
+  animation: shimmer 3s ease-in-out infinite;
+}
+
+.animate-shimmer-reverse {
+  animation: shimmer-reverse 3s ease-in-out infinite;
+}
+
+.animate-marquee {
+  animation: marquee 15s linear infinite;
+}
+
+.animate-gradient-x {
+  background-size: 400% 400%;
+  animation: gradient-x 4s ease infinite;
+}
+
+
+@layer base {
+  /* 🎨 TIPOGRAFIA PROFISSIONAL COM INTER */
+  body {
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-sans);
+    font-weight: 600;
+    letter-spacing: -0.025em;
+  }
+  
+  h1 {
+    font-weight: 700;
+    letter-spacing: -0.035em;
+  }
+  
+  h2 {
+    font-weight: 600;
+    letter-spacing: -0.03em;
+  }
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply font-sans antialiased text-foreground;
+  }
+  
+  /* Gradiente verde para elementos especiais */
+  .tetri-gradient {
+    background: linear-gradient(to right, #2563eb, #1d4ed8, #2563eb);
+  }
+  
+  .tetri-gradient-light {
+    background: linear-gradient(to right, #F0F8E0, #FFFFFF, #F5FAE8);
+  }
+  
+  /* 🎨 ESTILO BLACK VERDE TRANSPARENTE (IGUAL TELA DE LOGIN) - APENAS MODO DARK */
+  .dark .card-black-green {
+    background: rgba(37, 99, 235, 0.2);
+    backdrop-filter: blur(24px);
+    border-color: rgba(37, 99, 235, 0.3);
+  }
+}
+
+/* Animações customizadas para a landing page */
+@keyframes fade-in-up {
+  0% {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in-up {
+  animation: fade-in-up 0.8s ease-out forwards;
+  opacity: 0;
+}
+
+.animation-delay-200 {
+  animation-delay: 0.2s;
+}
+
+.animation-delay-400 {
+  animation-delay: 0.4s;
+}
+
+.animation-delay-600 {
+  animation-delay: 0.6s;
+}
+
+.animation-delay-700 {
+  animation-delay: 0.7s;
+}
+
+.animation-delay-800 {
+  animation-delay: 0.8s;
+}
+
+.animation-delay-1000 {
+  animation-delay: 1s;
+}
+
+.animation-delay-1200 {
+  animation-delay: 1.2s;
+}
+
+.animation-delay-1300 {
+  animation-delay: 1.3s;
+}
+
+.animation-delay-1400 {
+  animation-delay: 1.4s;
+}
+
+/* Smooth scrolling para navegação */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Efeito hover para cards */
+.group:hover .group-hover\:scale-110 {
+  transform: scale(1.1);
+}
+
+/* Gradientes customizados */
+.bg-gradient-custom-green {
+  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 50%, #052e16 100%);
+}
+
+/* Backdrop blur personalizado */
+.backdrop-blur-custom {
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+}
+
+/* Animações Ultra Avançadas */
+@keyframes twinkle {
+  0%, 100% { opacity: 0.3; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.2); }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  33% { transform: translateY(-20px) rotate(5deg); }
+  66% { transform: translateY(-10px) rotate(-5deg); }
+}
+
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 20px rgba(37, 99, 235, 0.5); }
+  50% { box-shadow: 0 0 40px rgba(37, 99, 235, 0.8), 0 0 60px rgba(37, 99, 235, 0.3); }
+}
+
+@keyframes text-shimmer {
+  0% { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+
+@keyframes gradient-x {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+@keyframes count-up {
+  0% { transform: scale(0.8); opacity: 0; }
+  50% { transform: scale(1.1); }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+@keyframes bounce-slow {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+@keyframes spin-slow {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes pulse-slow {
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 1; }
+}
+
+/* Classes de Animação */
+.animate-twinkle {
+  animation: twinkle 3s ease-in-out infinite;
+}
+
+.animate-twinkle-delayed {
+  animation: twinkle 3s ease-in-out infinite 1s;
+}
+
+.animate-twinkle-slow {
+  animation: twinkle 4s ease-in-out infinite 2s;
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+.animate-float-delayed {
+  animation: float 6s ease-in-out infinite 2s;
+}
+
+.animate-float-slow {
+  animation: float 8s ease-in-out infinite;
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+.animate-glow {
+  animation: pulse-glow 3s ease-in-out infinite;
+}
+
+.animate-text-shimmer {
+  background: linear-gradient(90deg, #ffffff 0%, #2563eb 50%, #ffffff 100%);
+  background-size: 200% 100%;
+  background-clip: text;
+  -webkit-background-clip: text;
+  animation: text-shimmer 3s ease-in-out infinite;
+}
+
+.animate-gradient-x {
+  background-size: 300% 300%;
+  animation: gradient-x 4s ease infinite;
+}
+
+.animate-count-up {
+  animation: count-up 1s ease-out forwards;
+}
+
+.animate-bounce-slow {
+  animation: bounce-slow 2s ease-in-out infinite;
+}
+
+.animate-spin-slow {
+  animation: spin-slow 20s linear infinite;
+}
+
+.animation-duration-3000 {
+  animation-duration: 3s;
+}
+
+.animate-pulse-slow {
+  animation: pulse-slow 4s ease-in-out infinite;
+}
+
+.animate-pulse-slower {
+  animation: pulse-slow 6s ease-in-out infinite;
+}
+
+/* Animação extra para delays maiores */
+.animation-delay-2000 {
+  animation-delay: 2s;
+}
+
+/* Animações Adicionais para Landing Page Ultra-Moderna */
+@keyframes tilt {
+  0% { transform: rotate(0deg); }
+  25% { transform: rotate(1deg); }
+  75% { transform: rotate(-1deg); }
+  100% { transform: rotate(0deg); }
+}
+
+.animate-tilt {
+  animation: tilt 10s ease-in-out infinite;
+}
+
+/* Delays de Animação Extras */
+.animation-delay-300 {
+  animation-delay: 0.3s;
+}
+
+.animation-delay-500 {
+  animation-delay: 0.5s;
+}
+
+.animation-delay-900 {
+  animation-delay: 0.9s;
+}
+
+.animation-delay-1100 {
+  animation-delay: 1.1s;
+}
+
+/* Efeitos de Hover Avançados - Anti-flickering */
+.hover-glow {
+  transition: box-shadow 0.3s ease, transform 0.3s ease;
+  will-change: box-shadow, transform;
+}
+
+.hover-glow:hover {
+  box-shadow: 0 0 30px rgba(37, 99, 235, 0.4);
+  transform: translateY(-2px);
+}
+
+/* Glitch Effect para Logo */
+@keyframes glitch {
+  0% { text-shadow: 0.05em 0 0 #00fffc, -0.03em -0.04em 0 #fc00ff, 0.025em 0.04em 0 #fffc00; }
+  15% { text-shadow: 0.05em 0 0 #00fffc, -0.03em -0.04em 0 #fc00ff, 0.025em 0.04em 0 #fffc00; }
+  16% { text-shadow: -0.05em -0.025em 0 #00fffc, 0.025em 0.035em 0 #fc00ff, -0.05em -0.05em 0 #fffc00; }
+  49% { text-shadow: -0.05em -0.025em 0 #00fffc, 0.025em 0.035em 0 #fc00ff, -0.05em -0.05em 0 #fffc00; }
+  50% { text-shadow: 0.05em 0.035em 0 #00fffc, 0.03em 0 0 #fc00ff, 0 -0.04em 0 #fffc00; }
+  99% { text-shadow: 0.05em 0.035em 0 #00fffc, 0.03em 0 0 #fc00ff, 0 -0.04em 0 #fffc00; }
+  100% { text-shadow: -0.05em 0 0 #00fffc, -0.025em -0.04em 0 #fc00ff, -0.04em -0.025em 0 #fffc00; }
+}
+
+.animate-glitch {
+  animation: glitch 1s linear infinite;
+}
+
+/* Line Clamp Utilities */
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.line-clamp-3 {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* 🎨 CLASSES PARA ÍCONES CINZA SOFISTICADO */
+@layer components {
+  .icon-sophisticated {
+    @apply text-gray-500 dark:text-gray-400 transition-colors duration-200;
+  }
+  
+  .icon-sophisticated:hover {
+    @apply text-gray-700 dark:text-gray-300;
+  }
+  
+  .icon-sophisticated-active {
+    @apply text-gray-700 dark:text-gray-200;
+  }
+  
+  .icon-sophisticated-muted {
+    @apply text-gray-400 dark:text-gray-500;
+  }
+  
+  /* 🌟 SOMBRAS ELEGANTES E PROFISSIONAIS */
+  .shadow-card {
+    box-shadow: var(--shadow-card);
+    transition: box-shadow 0.2s ease;
+  }
+  
+  .shadow-card:hover {
+    box-shadow: var(--shadow-card-hover);
+  }
+  
+  .shadow-modal {
+    box-shadow: var(--shadow-modal);
+  }
+  
+  .shadow-dropdown {
+    box-shadow: var(--shadow-dropdown);
+  }
+  
+  /* 🔥 ESCONDER SCROLLBAR HORIZONTAL (para carrosséis) */
+  .scrollbar-hide {
+    -ms-overflow-style: none;  /* IE e Edge */
+    scrollbar-width: none;  /* Firefox */
+  }
+  
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;  /* Chrome, Safari, Opera */
+  }
+}
+
+html { scroll-behavior: smooth; }
+
+/* 🎨 ANIMAÇÕES DASHBOARD - EFEITOS DA IMAGEM DE REFERÊNCIA */
+
+/* Fade-in e slide-up para cards */
+@keyframes dashboardFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Counting animation para números */
+@keyframes counting {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Pulse glow para badges e métricas importantes */
+@keyframes badgePulse {
+  0%, 100% {
+    box-shadow: 0 0 10px rgba(37, 99, 235, 0.2);
+    transform: scale(1);
+  }
+  50% {
+    box-shadow: 0 0 20px rgba(37, 99, 235, 0.4);
+    transform: scale(1.02);
+  }
+}
+
+/* Progress bar animation */
+@keyframes progressFill {
+  from {
+    width: 0%;
+  }
+  to {
+    width: var(--progress-width);
+  }
+}
+
+/* Chart animation - desenho gradual */
+@keyframes chartDraw {
+  from {
+    stroke-dashoffset: 1000;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+/* Hover elevation para cards */
+.dashboard-card {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.dashboard-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 
+    0 12px 28px rgba(0, 0, 0, 0.25),
+    0 4px 8px rgba(0, 0, 0, 0.15),
+    0 0 0 1px rgba(37, 99, 235, 0.1);
+}
+
+/* Aplicar fade-in nos cards (delays aplicados inline) */
+.animate-dashboard-card {
+  animation: dashboardFadeIn 0.6s ease-out forwards;
+  opacity: 0;
+}
+
+/* Badge animations */
+.animate-badge-pulse {
+  animation: badgePulse 2s ease-in-out infinite;
+}
+
+/* Smooth transitions para todos elementos interativos */
+.dashboard-interactive {
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.dashboard-interactive:hover {
+  transform: scale(1.05);
+  filter: brightness(1.1);
+}
+
+/* 📄 DOCS PAGE - Tema claro forçado */
+[data-testid="docs-page"] {
+  --card: 0 0% 100% !important;
+  --card-foreground: 222.2 84% 4.9% !important;
+  --background: 0 0% 100% !important;
+  --foreground: 222.2 84% 4.9% !important;
+  --muted: 210 40% 96.1% !important;
+  --muted-foreground: 215.4 16.3% 46.9% !important;
+  --border: 214.3 31.8% 91.4% !important;
+  --input: 214.3 31.8% 91.4% !important;
+  --primary: 222.2 47.4% 11.2% !important;
+  --primary-foreground: 210 40% 98% !important;
+  --secondary: 210 40% 96.1% !important;
+  --secondary-foreground: 222.2 47.4% 11.2% !important;
+  color-scheme: light !important;
+  background-color: #ffffff !important;
+  color: #111827 !important;
+}
+
+[data-testid="docs-page"] [class*="Card"],
+[data-testid="docs-page"] [class*="card"] {
+  background: #ffffff !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  border: 1px solid #e5e7eb !important;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.06) !important;
+  color: #111827 !important;
+}
+
+[data-testid="docs-page"] [class*="Card"]:hover,
+[data-testid="docs-page"] [class*="card"]:hover {
+  background: #ffffff !important;
+  border-color: #d1d5db !important;
+  transform: none !important;
+}
+
+[data-testid="docs-page"] .rounded-lg,
+[data-testid="docs-page"] .rounded-xl {
+  background-color: inherit !important;
+  border-color: #e5e7eb !important;
+  color: inherit !important;
+}
+
+[data-testid="docs-page"] .border {
+  border-color: #e5e7eb !important;
+}
+
+[data-testid="docs-page"] button {
+  color: #374151 !important;
+}
+
+[data-testid="docs-page"] .bg-card,
+[data-testid="docs-page"] [class*="bg-card"] {
+  background-color: #ffffff !important;
+  color: #111827 !important;
+}
+
+[data-testid="docs-page"] .bg-gray-50,
+[data-testid="docs-page"] .bg-gray-100 {
+  background-color: #f9fafb !important;
+  color: #111827 !important;
+}
+
+/* Reset dark mode overrides dentro de páginas legais (force-light) */
+[data-testid="docs-page"].bg-gray-50,
+[data-testid="docs-page"].min-h-screen {
+  background-color: #f9fafb !important;
+  color: #111827 !important;
+}
+[data-testid="docs-page"] .bg-white {
+  background-color: #ffffff !important;
+  color: #111827 !important;
+}
+[data-testid="docs-page"] .border-gray-200,
+[data-testid="docs-page"] .border-gray-300 {
+  border-color: #e5e7eb !important;
+}
+[data-testid="docs-page"] .text-gray-600,
+[data-testid="docs-page"] .text-gray-700,
+[data-testid="docs-page"] .text-gray-800,
+[data-testid="docs-page"] .text-gray-900 {
+  color: #374151 !important;
+}
+[data-testid="docs-page"] .text-gray-900 {
+  color: #111827 !important;
+}
+[data-testid="docs-page"] .bg-violet-50 {
+  background-color: #f5f3ff !important;
+}
+[data-testid="docs-page"] .bg-amber-50 {
+  background-color: #fffbeb !important;
+}
+[data-testid="docs-page"] .bg-blue-50 {
+  background-color: #eff6ff !important;
+}
+[data-testid="docs-page"] .bg-cyan-50 {
+  background-color: #ecfeff !important;
+}
+[data-testid="docs-page"] .bg-orange-50 {
+  background-color: #fff7ed !important;
+}
+[data-testid="docs-page"] .bg-red-50 {
+  background-color: #fef2f2 !important;
+}
+[data-testid="docs-page"] .divide-y > *,
+[data-testid="docs-page"] .divide-gray-200 > * {
+  border-color: #e5e7eb !important;
+}

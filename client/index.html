@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="pt-BR" translate="no" class="light">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="google" content="notranslate" />
+    <!-- Tema aplicado ANTES do React para evitar flash -->
+    <script>
+      (function() {
+        try {
+          var saved = localStorage.getItem('zen-ui-theme');
+          var theme = saved === 'dark' ? 'dark' : 'light';
+          document.documentElement.classList.remove('light', 'dark');
+          document.documentElement.classList.add(theme);
+        } catch (e) {
+          document.documentElement.classList.add('light');
+        }
+      })();
+    </script>
+    <meta http-equiv="Permissions-Policy" content="payment=*, geolocation=(self), microphone=(), camera=()" />
+    <link rel="icon" type="image/png" sizes="512x512" href="/favicon.png?v=1" />
+    <link rel="apple-touch-icon" sizes="512x512" href="/favicon.png?v=1" />
+    <link rel="shortcut icon" type="image/png" href="/favicon.png?v=1" />
+    <title>VolatusPay</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+    <link rel="manifest" href="/manifest.json" />
+    <meta name="theme-color" content="#1e3a8a" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="VolatusPay" />
+    <!-- Apenas Inter - única fonte usada no app -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  </head>
+  <body translate="no">
+    <div id="root" translate="no"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

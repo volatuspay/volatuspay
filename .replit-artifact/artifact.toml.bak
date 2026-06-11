@@ -1,0 +1,22 @@
+kind = "web"
+previewPath = "/__vp-server"
+title = "VolatusPay (secondary)"
+version = "1.0.0"
+id = "artifacts/volatuspay"
+router = "path"
+
+[[integratedSkills]]
+name = "react-vite"
+version = "1.0.0"
+
+[[services]]
+name = "web"
+paths = [ "/__vp-server" ]
+localPort = 5001
+
+[services.development]
+run = "cd /home/runner/workspace/volatuspay/Volatuspay/artifacts/volatuspay && NODE_ENV=development node_modules/.bin/tsx server/index.ts"
+
+[services.env]
+PORT = "5001"
+BASE_PATH = "/"
