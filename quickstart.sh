@@ -1,15 +1,13 @@
 #!/bin/bash
 set -e
 APP_DIR="/var/www/volatuspay"
-echo "⚡ VolatusPay QuickStart v3..."
+echo "⚡ VolatusPay QuickStart v4..."
 
 # Node.js 20
 if ! command -v node &>/dev/null; then
   curl -fsSL https://deb.nodesource.com/setup_20.x | bash -
   apt-get install -y nodejs
 fi
-
-# pnpm + pm2 + tsx global
 npm install -g pnpm pm2 tsx 2>/dev/null || true
 
 # Código
@@ -56,11 +54,29 @@ ln -sf /etc/nginx/sites-available/volatuspay /etc/nginx/sites-enabled/
 rm -f /etc/nginx/sites-enabled/default
 nginx -t && systemctl reload nginx
 
-# PM2 — usar tsx como interpretador do server/index.ts
-TSX_BIN=$(which tsx 2>/dev/null || echo "/usr/bin/tsx")
+# Criar ecosystem.config.js para PM2
+TSX_BIN=$(which tsx 2>/dev/null || echo "tsx")
+cat > $APP_DIR/ecosystem.config.cjs << ECOEOF
+module.exports = {
+  apps: [{
+    name: 'volatuspay',
+    script: '$TSX_BIN',
+    args: 'server/index.ts',
+    cwd: '$APP_DIR',
+    interpreter: 'none',
+    env: {
+      NODE_ENV: 'production',
+      PORT: '3000',
+      APP_BASE_URL: 'https://volatuspay.com',
+      SKIP_ENV_VALIDATION: 'true'
+    }
+  }]
+}
+ECOEOF
+
+# PM2 via ecosystem
 pm2 delete volatuspay 2>/dev/null || true
-cd $APP_DIR
-pm2 start server/index.ts --name volatuspay --interpreter "$TSX_BIN"
+pm2 start $APP_DIR/ecosystem.config.cjs
 pm2 save
 pm2 startup systemd -u root --hp /root 2>/dev/null | grep "^sudo\|^env" | head -1 | bash || true
 
@@ -73,4 +89,4 @@ echo ""
 echo "=== STATUS ==="
 pm2 status
 sleep 5
-curl -s http://localhost:3000/_health && echo -e "\n✅ App OK!" || echo "❌ Logs: pm2 logs volatuspay --lines 20"
+curl -s http://localhost:3000 && echo -e "\n✅ App OK!" || echo "❌ Ver logs: pm2 logs volatuspay --lines 30"
