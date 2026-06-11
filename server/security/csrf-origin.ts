@@ -27,16 +27,10 @@ function getAllowedOrigins(): string[] {
     'https://www.volatus.com',
   ];
 
-  // Em dev/staging também permite o domínio Replit e localhost
+  // Em dev também permite localhost
   if (process.env.NODE_ENV !== 'production') {
     origins.push('http://localhost:5000');
     origins.push('http://localhost:3000');
-  }
-
-  // Domínio dinâmico do Replit (ex: xxx.replit.dev)
-  const replitDomain = process.env.REPLIT_DEV_DOMAIN;
-  if (replitDomain) {
-    origins.push(`https://${replitDomain}`);
   }
 
   return origins;

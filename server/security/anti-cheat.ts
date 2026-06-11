@@ -226,8 +226,7 @@ const trustedIPs = new Set([
   // REMOVED: 'localhost' (DNS spoofing risk), '0.0.0.0' (CRITICAL: allows any IP)
 ]);
 
-// 🔵 SUBNET REPLIT: Qualquer IP 160.20.x.x é infraestrutura Replit
-const isReplitSubnet = (ip: string) => /^160\.20\./.test(ip) || /^100\.64\./.test(ip);
+const isReplitSubnet = (ip: string) => /^100\.64\./.test(ip); // CGNat range
 
 // 🧹 LIMPEZA INICIAL: Remover IPs confiáveis da blacklist
 setTimeout(() => {

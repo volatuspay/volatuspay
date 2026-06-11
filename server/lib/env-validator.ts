@@ -90,7 +90,7 @@ export function validateEnvironmentVariables(): EnvValidationResult {
  * Em produção, faz retry para aguardar injeção de secrets pelo runtime
  */
 export async function validateOrThrow(): Promise<void> {
-  const isProduction = process.env.NODE_ENV === 'production' || !!process.env.REPLIT_DEPLOYMENT;
+  const isProduction = process.env.NODE_ENV === 'production';
   const skipValidation = process.env.SKIP_ENV_VALIDATION === 'true';
 
   if (skipValidation) {

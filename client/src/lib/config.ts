@@ -13,11 +13,8 @@ const isDevelopment = () => {
   
   const isDev = hostname === 'localhost' || 
          hostname === '127.0.0.1' ||
-         hostname.includes('replit') ||
-         hostname.includes('.replit.app') ||
-         hostname.includes('replit.') ||
-         hostname.endsWith('-5000.replit.dev') ||
-         port === '5000';
+         port === '5000' ||
+         port === '3000';
          
   console.log('isDevelopment():', { hostname, port, isDev });
   return isDev;
@@ -54,10 +51,6 @@ export const APP_CONFIG = {
   
   // URLs SENSVEIS - Nunca exibir no console/DevTools
   SENSITIVE_DOMAINS: [
-    'replit.com',
-    'replit.app',
-    'replit.dev',
-    'repl.co',
     'js.stripe.com',
     'stripe.com',
     'fonts.googleapis.com',

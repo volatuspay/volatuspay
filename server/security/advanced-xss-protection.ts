@@ -74,10 +74,7 @@ export class AdvancedXSSProtection {
           "https://s.ytimg.com",
           "https://player.vimeo.com",
           "https://*.pandavideo.com.br",
-          "https://connect.facebook.net",
-          "https://replit.com",
-          "https://*.replit.com",
-          "https://*.replit.dev"
+          "https://connect.facebook.net"
         ] : [
           "'self'",
           // Hash do script inline de tema no index.html (detecção dark/light antes do React)
@@ -183,9 +180,6 @@ export class AdvancedXSSProtection {
           "https://video.bunnycdn.com",
           "https://*.bunnycdn.com",
           "https://*.b-cdn.net",
-          "https://replit.com",
-          "https://*.replit.com",
-          "https://*.replit.dev",
           "wss:", // Vite HMR
           "https:" // Dev amplo
         ] : [
@@ -271,7 +265,7 @@ export class AdvancedXSSProtection {
           "https://*.firebaseio.com",
           "https://accounts.google.com"
         ],
-        'frame-ancestors': isDev ? ["'self'", "https://*.replit.com", "https://*.replit.dev"] : ["'none'"], // Previne clickjacking
+        'frame-ancestors': isDev ? ["'self'"] : ["'none'"], // Previne clickjacking
         'base-uri': ["'self'"],
         'form-action': ["'self'"],
         'object-src': ["'none'"]

@@ -268,9 +268,6 @@ export const antiHotlinkingMiddleware = (req: Request, res: Response, next: Next
     if (refererUrl.hostname === currentHost || 
         refererUrl.hostname === 'localhost' || 
         refererUrl.hostname === '127.0.0.1' ||
-        refererUrl.hostname.endsWith('.replit.dev') ||
-        refererUrl.hostname.endsWith('.replit.app') ||
-        refererUrl.hostname.endsWith('.repl.co') ||
         refererUrl.hostname === 'volatuspay.com' ||
         refererUrl.hostname.endsWith('.volatuspay.com') ||
         refererUrl.hostname === 'volatuspay.com' ||

@@ -219,7 +219,7 @@ export async function createBoletoCharge(
     ],
     metadata: {
       custom_id: orderId,
-      notification_url: `${process.env.REPLIT_DEV_DOMAIN ? `https://${process.env.REPLIT_DEV_DOMAIN}` : (process.env.APP_BASE_URL || 'https://volatuspay.com')}/api/webhooks/efibank`,
+      notification_url: `${process.env.APP_BASE_URL || 'https://volatuspay.com'}/api/webhooks/efibank`,
     },
     payment: {
       banking_billet: {
@@ -304,7 +304,7 @@ export async function createCardCharge(
     ],
     metadata: {
       custom_id: orderId,
-      notification_url: `${process.env.REPLIT_DEV_DOMAIN ? `https://${process.env.REPLIT_DEV_DOMAIN}` : (process.env.APP_BASE_URL || 'https://volatuspay.com')}/api/webhooks/efibank`,
+      notification_url: `${process.env.APP_BASE_URL || 'https://volatuspay.com'}/api/webhooks/efibank`,
     },
     payment: {
       credit_card: {

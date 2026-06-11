@@ -80,13 +80,7 @@ function getBaseDomain(): string {
   if (process.env.APP_BASE_URL) {
     return process.env.APP_BASE_URL.replace(/\/$/, '');
   }
-  // Prioridade 2: domínio Replit em dev
-  const devDomain = process.env.REPLIT_DEV_DOMAIN || process.env.REPLIT_DOMAINS;
-  if (devDomain) {
-    const firstDomain = devDomain.split(',')[0].trim();
-    return `https://${firstDomain}`;
-  }
-  // Prioridade 3: produção padrão
+  // Prioridade 2: produção padrão
   return 'https://volatuspay.com';
 }
 
@@ -753,7 +747,7 @@ function isExternalImageUrl(url: string): boolean {
   if (!url || typeof url !== 'string') return false;
   
   // Verificar se é URL interna do sistema
-  if (url.includes('volatuspay.com') || url.includes('replit.dev') || url.startsWith('/uploads/')) {
+  if (url.includes('volatuspay.com') || url.startsWith('/uploads/')) {
     return false;
   }
   
@@ -1370,18 +1364,8 @@ const server = createServer(app);
 // attach Express app to it so requests are handled immediately.
 // Then monkey-patch server.listen so the callback fires without binding to port again.
 {
-  const earlyServer = (global as any).__REPLIT_SERVER;
-  if (earlyServer) {
-    // Attach Express app to the already-open server
-    if (typeof (global as any).__SET_EXPRESS_APP === 'function') {
-      (global as any).__SET_EXPRESS_APP(app);
-    }
-    // Monkey-patch server.listen: fire the callback via setImmediate, skip actual bind
-    (server as any).listen = (port: any, host: any, cb?: () => void) => {
-      console.log(`🔗 [STARTUP] Reusing early server on port ${port} — skipping bind`);
-      if (cb) setImmediate(cb);
-      return server;
-    };
+  if (false) {
+    // Removed: Replit early-server fast startup (not needed in production)
   }
 }
 
@@ -3050,9 +3034,6 @@ app.use((req, res, next) => {
   const hasSameOriginReferer = referer && (
     referer.startsWith('http://localhost:5000') ||
     referer.startsWith('http://127.0.0.1:5000') ||
-    referer.includes('.replit.dev') ||
-    referer.includes('.replit.app') ||
-    referer.includes('.repl.co') ||
     referer.includes('volatuspay.com')
   );
   

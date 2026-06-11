@@ -16,13 +16,8 @@ function getBaseDomain(): string {
   if (process.env.APP_BASE_URL) {
     return process.env.APP_BASE_URL.replace(/\/$/, '');
   }
-  const devDomain = process.env.REPLIT_DEV_DOMAIN || process.env.REPLIT_DOMAINS;
-  if (devDomain) {
-    const firstDomain = devDomain.split(',')[0].trim();
-    return `https://${firstDomain}`;
-  }
   
-  return 'http://localhost:5000';
+  return 'https://volatuspay.com';
 }
 
 function normalizeTimestamps(obj: any, seen = new WeakSet()): any {
