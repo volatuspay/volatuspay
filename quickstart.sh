@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 APP_DIR="/var/www/volatuspay"
-echo "⚡ VolatusPay QuickStart v2..."
+echo "⚡ VolatusPay QuickStart v3..."
 
 # Node.js 20
 if ! command -v node &>/dev/null; then
@@ -9,8 +9,8 @@ if ! command -v node &>/dev/null; then
   apt-get install -y nodejs
 fi
 
-# pnpm + pm2
-npm install -g pnpm pm2 2>/dev/null || true
+# pnpm + pm2 + tsx global
+npm install -g pnpm pm2 tsx 2>/dev/null || true
 
 # Código
 if [ -d "$APP_DIR/.git" ]; then
@@ -56,17 +56,13 @@ ln -sf /etc/nginx/sites-available/volatuspay /etc/nginx/sites-enabled/
 rm -f /etc/nginx/sites-enabled/default
 nginx -t && systemctl reload nginx
 
-# Encontrar tsx
-TSX=$(find $APP_DIR/node_modules -name "tsx" -type f -path "*/bin/*" 2>/dev/null | head -1)
-[ -z "$TSX" ] && TSX=$(which tsx 2>/dev/null || npm install -g tsx && which tsx)
-[ -z "$TSX" ] && TSX="$APP_DIR/node_modules/.bin/tsx"
-echo "Usando tsx: $TSX"
-
-# PM2
+# PM2 — usar tsx como interpretador do server/index.ts
+TSX_BIN=$(which tsx 2>/dev/null || echo "/usr/bin/tsx")
 pm2 delete volatuspay 2>/dev/null || true
-cd $APP_DIR && pm2 start "$TSX" --name volatuspay -- server/index.ts
+cd $APP_DIR
+pm2 start server/index.ts --name volatuspay --interpreter "$TSX_BIN"
 pm2 save
-pm2 startup systemd -u root --hp /root 2>/dev/null | grep "^sudo" | bash || true
+pm2 startup systemd -u root --hp /root 2>/dev/null | grep "^sudo\|^env" | head -1 | bash || true
 
 # SSL
 apt-get install -y certbot python3-certbot-nginx 2>/dev/null || true
@@ -76,5 +72,5 @@ certbot --nginx -d volatuspay.com -d www.volatuspay.com \
 echo ""
 echo "=== STATUS ==="
 pm2 status
-sleep 3
-curl -s http://localhost:3000/_health && echo "✅ App OK!" || echo "❌ App não respondeu ainda — veja: pm2 logs volatuspay"
+sleep 5
+curl -s http://localhost:3000/_health && echo -e "\n✅ App OK!" || echo "❌ Logs: pm2 logs volatuspay --lines 20"
